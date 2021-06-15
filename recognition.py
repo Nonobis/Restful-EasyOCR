@@ -1,5 +1,6 @@
 from flask import Flask, request, abort
 import urllib
+import urllib.request
 import numpy as np
 import cv2
 import easyocr
@@ -27,9 +28,9 @@ def url_to_image(url):
     :param url: url to the image
     :return: image in format of Opencv
     """
+    print("url = ", url)
     resp = urllib.request.urlopen(url)
     image = np.asarray(bytearray(resp.read()), dtype="uint8")
-    print("url = ", url)
     image = cv2.imdecode(image, cv2.IMREAD_COLOR)
     return image
 
@@ -59,22 +60,21 @@ def data_file_process(data):
     Trying to extract image data from uploaded file
     """
     if 'file' not in request.files:
-        flash('No file part')	    
+        print('No file part')	    
         abort(401)
 
     file = request.files['file']	
     if file.filename == '':
-        flash('No image selected for uploading')	    
+        print('No image selected for uploading')	    
         abort(401)
 	
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        #print('upload_image filename: ' + filename)
-        flash('Image successfully uploaded')
+        print('upload_image filename: ' + filename)
         return file_to_image(filename), secret_key
     else:
-        flash('Allowed image types are -> png, jpg, jpeg, gif')
+        print('Allowed image types are -> png, jpg, jpeg, gif')
         abort(401)   
 
 

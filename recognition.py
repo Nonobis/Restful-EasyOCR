@@ -43,37 +43,37 @@ def file_to_image(path):
     image = cv2.imdecode(img, cv2.IMREAD_COLOR)
     return image
 
-def data_process(data):
+def data_url_process(data):
     """
-    read params from the received data
+    read params from the received data from remote url
     :param data: in json format
     :return: params for image processing
     """
     
     secret_key = data["secret_key"]
     image_url = data["image_url"]
-    if not image_url:
-        **** Trying to extract image data from uploaded file
-        ****
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
-        if file.filename == '':
-            flash('No image selected for uploading')
-            return redirect(request.url)
-        
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            #print('upload_image filename: ' + filename)
-            flash('Image successfully uploaded and displayed below')
-            return file_to_image(filename), secret_key
-        else:
-            flash('Allowed image types are -> png, jpg, jpeg, gif')
+    return url_to_image(image_url), secret_key
+
+def data_file_process(data):	
+    """
+    Trying to extract image data from uploaded file
+    """
+    if 'file' not in request.files:
+	    flash('No file part')	    
+	    abort(401)
+	file = request.files['file']
+    if file.filename == '':
+	    flash('No image selected for uploading')	    
+	    abort(401)
+    if file and allowed_file(file.filename):
+	filename = secure_filename(file.filename)
+	file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+	#print('upload_image filename: ' + filename)
+	flash('Image successfully uploaded')
+	return file_to_image(filename), secret_key
     else:
-        return url_to_image(image_url), secret_key
-    
+	flash('Allowed image types are -> png, jpg, jpeg, gif')
+	abort(401)   
 
 
 def recognition(image):
@@ -102,7 +102,7 @@ def process():
     :return: dict of width and points
     """
     data = request.get_json()
-    image, secret_key = data_process(data)
+    image, secret_key = data_url_process(data)
     if secret_key == SECRET_KEY:
         results = recognition(image)
         return {
@@ -111,6 +111,21 @@ def process():
     else:
         abort(401)
 
+@app.route('/ocr_file', methods=['GET', 'POST'])
+def process():
+    """
+    received request from client and process the image (sent as file)
+    :return: dict of width and points
+    """
+    data = request.get_json()
+    image, secret_key = data_file_process(data)
+    if secret_key == SECRET_KEY:
+        results = recognition(image)
+        return {
+            "results": results
+        }
+    else:
+        abort(401)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=2000)

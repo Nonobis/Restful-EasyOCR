@@ -98,7 +98,7 @@ def recognition(image):
 
 
 @app.route('/ocr', methods=['GET', 'POST'])
-def process():
+def processUrl():
     """
     received request from client and process the image
     :return: dict of width and points
@@ -114,7 +114,7 @@ def process():
         abort(401)
 
 @app.route('/ocr_file', methods=['GET', 'POST'])
-def process():
+def processFile():
     """
     received request from client and process the image (sent as file)
     :return: dict of width and points

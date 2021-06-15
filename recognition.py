@@ -59,21 +59,23 @@ def data_file_process(data):
     """
     Trying to extract image data from uploaded file
     """
-    if 'file' not in request.files:
+    if request.method == 'POST':		
+     # check if the post request has the file part
+     if 'file' not in request.files:
         print('No file part')	    
         abort(401)
 
-    file = request.files['file']	
-    if file.filename == '':
+     file = request.files['file']	
+     if file.filename == '':
         print('No image selected for uploading')	    
         abort(401)
 	
-    if file and allowed_file(file.filename):
+     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         print('upload_image filename: ' + filename)
         return file_to_image(filename), secret_key
-    else:
+     else:
         print('Allowed image types are -> png, jpg, jpeg, gif')
         abort(401)   
 
@@ -113,7 +115,7 @@ def processUrl():
     else:
         abort(401)
 
-@app.route('/ocr_file', methods=['GET', 'POST'])
+@app.route('/ocr_file', methods=['POST'])
 def processFile():
     """
     received request from client and process the image (sent as file)

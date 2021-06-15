@@ -49,10 +49,10 @@ def data_url_process(data):
     read params from the received data from remote url
     :param data: in json format
     :return: params for image processing
-    """
-    
-    secret_key = data["secret_key"]
+    """    
     image_url = data["image_url"]
+    secret_key = data["secret_key"]
+
     return url_to_image(image_url), secret_key
 
 def data_file_process(data):	

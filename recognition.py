@@ -9,7 +9,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'easyocr_vdt');
 UPLOAD_FOLDER = os.getenv('UPLOAD_FOLDER', '/data');
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
-reader = easyocr.Reader(["ru","rs_cyrillic","be","bg","uk","mn","en","fr"], gpu=False)
+reader = easyocr.Reader(["ru","rs_cyrillic","be","bg","uk","mn","en"], gpu=False)
 
 app = Flask(__name__)
 

@@ -6,7 +6,7 @@ import easyocr
 import os
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'easyocr_vdt');
-reader = easyocr.Reader(['en'], gpu=False)
+reader = easyocr.Reader(['en','fr','ru'], gpu=False)
 
 app = Flask(__name__)
 

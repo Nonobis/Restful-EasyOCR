@@ -59,23 +59,23 @@ def data_file_process(data):
     Trying to extract image data from uploaded file
     """
     if 'file' not in request.files:
-	flash('No file part')	    
-	abort(401)
+        flash('No file part')	    
+        abort(401)
 
     file = request.files['file']	
     if file.filename == '':
-	flash('No image selected for uploading')	    
-	abort(401)
+        flash('No image selected for uploading')	    
+        abort(401)
 	
     if file and allowed_file(file.filename):
-	filename = secure_filename(file.filename)
-	file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-	#print('upload_image filename: ' + filename)
-	flash('Image successfully uploaded')
-	return file_to_image(filename), secret_key
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        #print('upload_image filename: ' + filename)
+        flash('Image successfully uploaded')
+        return file_to_image(filename), secret_key
     else:
-	flash('Allowed image types are -> png, jpg, jpeg, gif')
-	abort(401)   
+        flash('Allowed image types are -> png, jpg, jpeg, gif')
+        abort(401)   
 
 
 def recognition(image):

@@ -59,12 +59,14 @@ def data_file_process(data):
     Trying to extract image data from uploaded file
     """
     if 'file' not in request.files:
-	    flash('No file part')	    
-	    abort(401)
-	file = request.files['file']
+	flash('No file part')	    
+	abort(401)
+
+    file = request.files['file']	
     if file.filename == '':
-	    flash('No image selected for uploading')	    
-	    abort(401)
+	flash('No image selected for uploading')	    
+	abort(401)
+	
     if file and allowed_file(file.filename):
 	filename = secure_filename(file.filename)
 	file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))

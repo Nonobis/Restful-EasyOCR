@@ -19,6 +19,7 @@ RUN apt-get update -y && \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/li
 
+
 # Clone EasyOCR repo
 RUN mkdir "$service_home" \
     && git clone "https://github.com/$gh_username/EasyOCR.git" "$service_home" \
@@ -31,8 +32,12 @@ RUN cd "$service_home" \
     && python setup.py build_ext --inplace -j 4 \
     && python -m pip install -e .
 
+# Upload Data Folder
+RUN mkdir "$service_home/data" 
+
 ADD ./recognition.py /home/ubuntu/
 WORKDIR /home/ubuntu/
+
 
 RUN pip install Flask
 

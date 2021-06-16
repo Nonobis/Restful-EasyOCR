@@ -29,9 +29,9 @@ def url_to_image(url):
     :param url: url to the image
     :return: image in format of Opencv
     """
-    print("url = ", url)
     resp = urllib.request.urlopen(url)
     image = np.asarray(bytearray(resp.read()), dtype="uint8")
+    print("url = ", url)
     image = cv2.imdecode(image, cv2.IMREAD_COLOR)
     return image
 
@@ -60,6 +60,7 @@ def data_file_process(data):
     """
     Trying to extract image data from uploaded file
     """
+    secret_key = data["secret_key"]
     if request.method == 'POST':		
      # check if the post request has the file part
      if 'file' not in request.files:
@@ -133,4 +134,4 @@ def processFile():
         abort(401)
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=2000)
+    app.run(host='0.0.0.0', port=8200)

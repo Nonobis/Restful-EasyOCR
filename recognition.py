@@ -9,8 +9,11 @@ import easyocr
 import os
 
 SECRET_KEY = os.getenv('SECRET_KEY', '7pK68LHhWwW7AP');
+USE_GPU = os.getenv('USE_GPU', true);
+SERVER_HOST=os.getenv('SERVER_HOST','0.0.0.0');
+SERVER_PORT = os.getenv('SERVER_PORT', '8200');
 
-reader = easyocr.Reader(["ru","rs_cyrillic","be","bg","uk","mn","en"], gpu=False)
+reader = easyocr.Reader(["ru","rs_cyrillic","be","bg","uk","mn","en"], gpu=USE_GPU)
 
 app = Flask(__name__)
 
@@ -114,4 +117,4 @@ def processFile():
         }
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8200)
+    app.run(host=SERVER_HOST, port=SERVER_PORT)

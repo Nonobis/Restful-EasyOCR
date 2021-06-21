@@ -5,6 +5,14 @@ FROM pytorch/pytorch
 ARG gh_username=JaidedAI
 ARG service_home="/home/EasyOCR"
 
+ENV SERVER_PORT 8200
+ENV SERVER_HOST 0.0.0.0
+
+# https://github.com/NVIDIA/nvidia-docker/wiki/Installation-(Native-GPU-Support)
+ENV USE_GPU true
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
+
 # Configure apt and install packages
 RUN apt-get update -y && \
     apt-get install -y \

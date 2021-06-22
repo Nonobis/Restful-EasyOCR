@@ -1,6 +1,6 @@
 from flask import Flask, request, abort
 import os      
-# For File Manipulations like get paths, rename
+import ast
 from flask import Flask, flash, request, redirect, render_template
 from werkzeug.utils import secure_filename
 import numpy as np
@@ -9,7 +9,7 @@ import easyocr
 import os
 
 SECRET_KEY = os.getenv('SECRET_KEY', '7pK68LHhWwW7AP');
-USE_GPU = os.getenv('USE_GPU', true);
+USE_GPU = getenv_bool('USE_GPU');
 SERVER_HOST=os.getenv('SERVER_HOST','0.0.0.0');
 SERVER_PORT = os.getenv('SERVER_PORT', '8200');
 
@@ -32,6 +32,10 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 if not os.path.isdir(UPLOAD_FOLDER):
     os.mkdir(UPLOAD_FOLDER)
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+
+def getenv_bool(name: str, default: str = "False"):
+    raw = os.getenv(name, default).title()
+    return ast.literal_eval(raw)
 
 def allowed_file(filename):
 	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS	

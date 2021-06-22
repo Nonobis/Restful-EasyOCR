@@ -8,9 +8,33 @@ import cv2
 import easyocr
 import os
 
-def getenv_bool(name: str, default: str = "False"):
-    raw = os.getenv(name, default).title()
-    return ast.literal_eval(raw)
+
+SECRET_KEY = os.getenv('SECRET_KEY', '7pK68LHhWwW7AP');
+raw = os.getenv('USE_GPU', 'false');.title()
+USE_GPU ast.literal_eval(raw)
+
+SERVER_HOST=os.getenv('SERVER_HOST','0.0.0.0');
+SERVER_PORT = os.getenv('SERVER_PORT', '8200');
+
+reader = easyocr.Reader(["ru","rs_cyrillic","be","bg","uk","mn","en"], gpu=USE_GPU)
+
+app = Flask(__name__)
+
+#It will allow below 16MB contents only, you can change it
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 
+
+path = os.getcwd()
+defaultFolder = os.path.join(path, '/data');
+isdir = os.path.isdir(defaultFolder) 
+if not os.path.isdir(defaultFolder):
+    os.mkdir(defaultFolder);
+
+UPLOAD_FOLDER = os.getenv('UPLOAD_FOLDER', defaultFolder);
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+if not os.path.isdir(UPLOAD_FOLDER):
+    os.mkdir(UPLOAD_FOLDER)
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 def allowed_file(filename):
 	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS	
@@ -97,30 +121,6 @@ def processFile():
 
 
 
-SECRET_KEY = os.getenv('SECRET_KEY', '7pK68LHhWwW7AP');
-USE_GPU = getenv_bool('USE_GPU');
-SERVER_HOST=os.getenv('SERVER_HOST','0.0.0.0');
-SERVER_PORT = os.getenv('SERVER_PORT', '8200');
-
-reader = easyocr.Reader(["ru","rs_cyrillic","be","bg","uk","mn","en"], gpu=USE_GPU)
-
-app = Flask(__name__)
-
-#It will allow below 16MB contents only, you can change it
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 
-
-path = os.getcwd()
-defaultFolder = os.path.join(path, '/data');
-isdir = os.path.isdir(defaultFolder) 
-if not os.path.isdir(defaultFolder):
-    os.mkdir(defaultFolder);
-
-UPLOAD_FOLDER = os.getenv('UPLOAD_FOLDER', defaultFolder);
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-if not os.path.isdir(UPLOAD_FOLDER):
-    os.mkdir(UPLOAD_FOLDER)
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 if __name__ == "__main__":
     app.run(host=SERVER_HOST, port=SERVER_PORT)

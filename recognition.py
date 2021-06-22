@@ -23,9 +23,9 @@ reader = easyocr.Reader(["ru","rs_cyrillic","be","bg","uk","mn","en"], gpu=USE_G
 app = Flask(__name__)
 
 # Instance Logger
-handler = logging.FileHandler("test.log")  # Create the file logger
-app.logger.addHandler(handler)             # Add it to the built-in logger
-app.logger.setLevel(logging.DEBUG)         # Set the log level to debug
+logger = logging.getLogger('werkzeug') # grabs underlying WSGI logger
+handler = logging.FileHandler('EasyOCR.log') # creates handler for the log file
+logger.addHandler(handler) # adds handler to the werkzeug WSGI logger
 
 #It will allow below 16MB contents only, you can change it
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 

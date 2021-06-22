@@ -1,5 +1,6 @@
 from flask import Flask, request, abort
-import os      
+import os 
+import logging
 import ast
 from flask import Flask, flash, request, redirect, render_template
 from werkzeug.utils import secure_filename
@@ -12,13 +13,19 @@ import os
 SECRET_KEY = os.getenv('SECRET_KEY', '7pK68LHhWwW7AP');
 raw = os.getenv('USE_GPU', 'false').title();
 USE_GPU = ast.literal_eval(raw);
-
 SERVER_HOST=os.getenv('SERVER_HOST','0.0.0.0');
 SERVER_PORT = os.getenv('SERVER_PORT', '8200');
 
+# Instance OCR Reader
 reader = easyocr.Reader(["ru","rs_cyrillic","be","bg","uk","mn","en"], gpu=USE_GPU)
 
+# Instance Flask
 app = Flask(__name__)
+
+# Instance Logger
+handler = logging.FileHandler("test.log")  # Create the file logger
+app.logger.addHandler(handler)             # Add it to the built-in logger
+app.logger.setLevel(logging.DEBUG)         # Set the log level to debug
 
 #It will allow below 16MB contents only, you can change it
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 
@@ -58,7 +65,7 @@ def file_to_image(path):
         image = cv2.imdecode(x, cv2.IMREAD_UNCHANGED)
         return image
     else:
-        print("Failed to read image")
+        app.logger.error("Failed to read image")
         abort(401)
 
 def data_file_process(data):	
@@ -70,21 +77,21 @@ def data_file_process(data):
     if request.method == 'POST':		
      # check if the post request has the file part
      if 'file' not in request.files:
-        print('No file part')	  
+        app.logger.error('No file part')	  
         abort(401)
 
      file = request.files['file']	
      if file.filename == '':
-        print('No image selected for uploading') 
+        app.logger.error('No image selected for uploading') 
         abort(401)
 	
      if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        print('upload_image filename: ' + filename)
+        app.logger.error('upload_image filename: ' + filename)
         return file_to_image(os.path.join(app.config['UPLOAD_FOLDER'], filename)), secret_key
      else:
-        print('Allowed image types are -> png, jpg, jpeg, gif') 
+        app.logger.error('Allowed image types are -> png, jpg, jpeg, gif') 
         abort(401)
 
 
@@ -118,9 +125,9 @@ def processFile():
         return {
             "results": results
         }
-
-
-
+    else:
+        app.logger.error('Secret Key is invalid.') 
+	
 
 if __name__ == "__main__":
     app.run(host=SERVER_HOST, port=SERVER_PORT)

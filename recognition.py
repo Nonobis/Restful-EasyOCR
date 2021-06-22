@@ -70,10 +70,10 @@ def file_to_image(path):
         image = cv2.imdecode(x, cv2.IMREAD_UNCHANGED)
 	
 	# convert to grayscale
-	gray=cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+        gray=cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
 	
 	# only take image center
-	center_cropped = center_crop(gray)
+        center_cropped = center_crop(gray)
 	
         return center_cropped
     else:

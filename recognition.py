@@ -72,10 +72,37 @@ def file_to_image(path):
 	# convert to grayscale
 	gray=cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
 	
-        return image
+	# only take image center
+	center_cropped = center_crop(gray)
+	
+        return center_cropped
     else:
         app.logger.error("Failed to read image")
         abort(401)
+
+def center_crop(img, new_width=None, new_height=None):        
+
+    width = img.shape[1]
+    height = img.shape[0]
+
+    if new_width is None:
+        new_width = min(width, height)
+
+    if new_height is None:
+        new_height = min(width, height)
+
+    left = int(np.ceil((width - new_width) / 2))
+    right = width - floor((width - new_width) / 2)
+
+    top = int(np.ceil((height - new_height) / 2))
+    bottom = height - int(np.floor((height - new_height) / 2))
+
+    if len(img.shape) == 2:
+        center_cropped_img = img[top:bottom, left:right]
+    else:
+        center_cropped_img = img[top:bottom, left:right, ...]
+
+    return center_cropped_img
 
 def data_file_process(data):	
     """

@@ -17,7 +17,7 @@ SERVER_HOST=os.getenv('SERVER_HOST','0.0.0.0');
 SERVER_PORT = os.getenv('SERVER_PORT', '8200');
 
 # Instance OCR Reader
-reader = easyocr.Reader(["ru","rs_cyrillic","be","bg","uk","mn","en"], gpu=USE_GPU)
+reader = easyocr.Reader(["en"], gpu=USE_GPU)
 
 # Instance Flask
 app = Flask(__name__)
@@ -86,9 +86,10 @@ def data_file_process(data):
         abort(401)
 	
      if file and allowed_file(file.filename):
+        app.logger.info('image ' + filename + ' format is allowed.') 
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        app.logger.error('upload_image filename: ' + filename)
+        app.logger.info('upload_image filename: ' + filename)
         return file_to_image(os.path.join(app.config['UPLOAD_FOLDER'], filename)), secret_key
      else:
         app.logger.error('Allowed image types are -> png, jpg, jpeg, gif') 

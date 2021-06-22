@@ -9,12 +9,19 @@ import cv2
 import easyocr
 import os
 
-
-SECRET_KEY = os.getenv('SECRET_KEY', '7pK68LHhWwW7AP');
-raw = os.getenv('USE_GPU', 'false').title();
-USE_GPU = ast.literal_eval(raw);
 SERVER_HOST=os.getenv('SERVER_HOST','0.0.0.0');
 SERVER_PORT = os.getenv('SERVER_PORT', '8200');
+SECRET_KEY = os.getenv('SECRET_KEY', '7pK68LHhWwW7AP');
+
+# Max 16M Upload for file
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 
+
+# Minimal acceptance score
+MIN_SCORE = os.getenv('MIN_SCORE', '');
+
+# determine if we use GPU
+raw = os.getenv('USE_GPU', 'false').title();
+USE_GPU = ast.literal_eval(raw);
 
 # Instance OCR Reader
 reader = easyocr.Reader(["en"], gpu=USE_GPU)
@@ -27,9 +34,7 @@ logger = logging.getLogger('werkzeug') # grabs underlying WSGI logger
 handler = logging.FileHandler('EasyOCR.log') # creates handler for the log file
 logger.addHandler(handler) # adds handler to the werkzeug WSGI logger
 
-#It will allow below 16MB contents only, you can change it
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 
-
+# Create local upload path
 path = os.getcwd()
 defaultFolder = os.path.join(path, '/data');
 isdir = os.path.isdir(defaultFolder) 
@@ -63,6 +68,10 @@ def file_to_image(path):
 
         #decode the array into an image
         image = cv2.imdecode(x, cv2.IMREAD_UNCHANGED)
+	
+	# convert to grayscale
+	gray=cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+	
         return image
     else:
         app.logger.error("Failed to read image")
@@ -96,7 +105,7 @@ def data_file_process(data):
         abort(401)
 
 
-def recognition(image):
+def recognition(image, min_score):
     """
 
     :param image:
@@ -105,6 +114,7 @@ def recognition(image):
     results = []
     texts = reader.readtext(image)
     for (bbox, text, prob) in texts:
+	if ( min_score == '' || prob>float(min_score)):
         output = {
             "coordinate": [list(map(float, coordinate)) for coordinate in bbox],
             "text": text,
@@ -122,7 +132,7 @@ def processFile():
     """
     image, secret_key = data_file_process(request)
     if secret_key == SECRET_KEY:
-        results = recognition(image)
+        results = recognition(image, MIN_SCORE)
         return {
             "results": results
         }

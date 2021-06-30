@@ -14,3 +14,5 @@ This small repository helps wrapping the EasyOCR functionalities inside Restful 
 
 TODO :
  - Add support for custom model path
+ - Restore original API & cleanup code
+ - Make PR

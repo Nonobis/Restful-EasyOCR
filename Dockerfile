@@ -36,8 +36,14 @@ RUN mkdir "$service_home" \
     && git pull upstream master
 
 # Build
-RUN cd "$service_home" \
-    && python setup.py build_ext --inplace -j 4 \
+RUN cd "$service_home"
+
+# install requirements for easyOCR inside a virtual env
+RUN  pip install -r requirements.txt \
+    && pip install onnx==1.9.0 onnxruntime==1.8.0
+    
+# Build EasyOCR
+RUN  python setup.py build_ext --inplace -j 4 \
     && python -m pip install -e .
 
 # Upload Data Folder
@@ -46,7 +52,7 @@ RUN mkdir "$service_home/data"
 ADD ./recognition.py /home/ubuntu/
 WORKDIR /home/ubuntu/
 
-
+# Install flask for API
 RUN pip install Flask
 
 EXPOSE 2000

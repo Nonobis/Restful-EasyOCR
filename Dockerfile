@@ -39,8 +39,7 @@ RUN mkdir "$service_home" \
 RUN cd "$service_home"
 
 # install requirements for easyOCR inside a virtual env
-RUN  pip install -r requirements.txt \
-    && pip install onnx==1.9.0 onnxruntime==1.8.0
+RUN  pip install -r requirements.txt
     
 # Build EasyOCR
 RUN  python setup.py build_ext --inplace -j 4 \
